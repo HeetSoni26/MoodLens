@@ -110,7 +110,7 @@ export default function DashboardClient() {
       <FeatureHeader
         eyebrow="Mood Dashboard"
         title="Your private emotion journal"
-        description="Every recorded session lands here — aggregated into charts and exportable reports. Stored only in this browser, never on a server."
+        description="Every recorded session lands here, aggregated into charts and exportable reports. Stored only in this browser, never on a server."
       />
 
       <div className="mx-auto w-full max-w-6xl px-5 pt-8">
@@ -134,7 +134,7 @@ export default function DashboardClient() {
             <span className="text-5xl" aria-hidden="true">📈</span>
             <h3 className="font-display text-lg font-bold text-white">No sessions yet</h3>
             <p className="max-w-sm text-sm leading-relaxed text-white/50">
-              Run the Live Detection camera or analyze some text, then hit Record / finish a session —
+              Run the Live Detection camera or analyze some text, then hit Record or finish a session and
               your emotion journal will build itself here.
             </p>
           </div>

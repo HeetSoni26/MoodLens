@@ -181,7 +181,7 @@ export default function VoiceClient() {
       <FeatureHeader
         eyebrow="Voice Fusion"
         title="Say it. Show it. Compare."
-        description="Speak naturally — MoodLens converts your speech to text, reads the emotion in your words, and (optionally) watches your face at the same time to see if the two agree."
+        description="Speak naturally: MoodLens converts your speech to text, reads the emotion in your words, and (optionally) watches your face at the same time to see if the two agree."
       />
 
       {!speechSupported && (
@@ -208,7 +208,7 @@ export default function VoiceClient() {
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-ink-900/90">
                 <ScanFace size={28} className="text-white/50" aria-hidden="true" />
                 <p className="max-w-[220px] text-center text-xs text-white/50">
-                  Camera is optional — enable it to add facial expressions to the fusion read.
+                  Camera is optional, enable it to add facial expressions to the fusion read.
                 </p>
                 <button
                   onClick={toggleCamera}
@@ -289,8 +289,8 @@ export default function VoiceClient() {
                   {faceDominant == null
                     ? 'Enable the camera to compare your words with your expressions.'
                     : inSync
-                      ? 'In sync — your words and your face tell the same story.'
-                      : 'Interesting — your words and your face disagree. MoodLens flags mixed signals like sarcasm or masked feelings.'}
+                      ? 'In sync: your words and your face tell the same story.'
+                      : 'Interesting: your words and your face disagree. MoodLens flags mixed signals like sarcasm or masked feelings.'}
                 </motion.p>
               </div>
             ) : (

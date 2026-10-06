@@ -18,11 +18,11 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: {
-    default: 'MoodLens — Real-Time Emotion AI, 100% On-Device',
+    default: 'MoodLens | Real-Time Emotion AI, 100% On-Device',
     template: '%s · MoodLens',
   },
   description:
-    'MoodLens reads emotions from your face, words, photos and videos — running entirely in your browser. Live webcam detection, batch photo analysis, video emotion timelines, text & voice mood reading, and a session dashboard. Nothing ever leaves your device.',
+    'MoodLens reads emotions from your face, words, photos and videos, running entirely in your browser. Live webcam detection, batch photo analysis, video emotion timelines, text & voice mood reading, and a session dashboard. Nothing ever leaves your device.',
   keywords: [
     'emotion detection',
     'facial emotion recognition',
@@ -38,15 +38,15 @@ export const metadata: Metadata = {
   authors: [{ name: 'Heet Soni', url: 'https://heet-portfolio-two.vercel.app' }],
   creator: 'Heet Soni',
   openGraph: {
-    title: 'MoodLens — Real-Time Emotion AI',
+    title: 'MoodLens | Real-Time Emotion AI',
     description:
-      'Reads emotions from faces, words, photos and videos — 100% in your browser. No uploads, no tracking, no accounts.',
+      'Reads emotions from faces, words, photos and videos, 100% in your browser. No uploads, no tracking, no accounts.',
     type: 'website',
     siteName: 'MoodLens',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MoodLens — Real-Time Emotion AI',
+    title: 'MoodLens | Real-Time Emotion AI',
     description: 'Face · Photo · Video · Text · Voice emotion AI running fully on-device.',
   },
 };

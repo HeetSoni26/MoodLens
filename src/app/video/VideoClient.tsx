@@ -15,6 +15,7 @@ import {
   emptyScores,
 } from '@/lib/emotions';
 import { detectFaces, loadVisionEngine, makeDetectorOptions, type DetectedFace, type VisionEngine } from '@/lib/vision';
+import { drawFaceBox, mapFaceBox, prepareCanvas } from '@/lib/overlay';
 import { downloadBlob, saveSession } from '@/lib/session';
 
 interface TimelineSample {
@@ -63,17 +64,12 @@ export default function VideoClient() {
     const canvas = canvasRef.current;
     const video = videoRef.current;
     if (!canvas || !video) return;
-    const cw = canvas.clientWidth;
-    const ch = canvas.clientHeight;
-    if (cw === 0) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    if (canvas.width !== Math.round(cw * dpr)) {
-      canvas.width = Math.round(cw * dpr);
-      canvas.height = Math.round(ch * dpr);
-    }
+    const prep = prepareCanvas(canvas, video.videoWidth, video.videoHeight);
+    if (!prep) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const { pw, ph, t, dpr } = prep;
+    ctx.clearRect(0, 0, pw, ph);
     const tl = timelineRef.current;
     if (tl.length === 0) return;
 
@@ -87,27 +83,8 @@ export default function VideoClient() {
     }
     const sample = tl[lo];
 
-    const vw = video.videoWidth || 1;
-    const vh = video.videoHeight || 1;
-    const sx = canvas.width / vw;
-    const sy = canvas.height / vh;
     for (const face of sample.faces) {
-      const top = dominantEmotion(face.scores);
-      const meta = EMOTIONS[top];
-      let { x, y, width, height } = face.box;
-      x *= sx;
-      y *= sy;
-      width *= sx;
-      height *= sy;
-      ctx.save();
-      ctx.strokeStyle = meta.color;
-      ctx.lineWidth = 2.5 * dpr;
-      ctx.shadowColor = `${meta.color}aa`;
-      ctx.shadowBlur = 14 * dpr;
-      ctx.beginPath();
-      ctx.roundRect(x, y, width, height, 12 * dpr);
-      ctx.stroke();
-      ctx.restore();
+      drawFaceBox(ctx, face, mapFaceBox(face, pw, t, false), dpr);
     }
   }, []);
 
@@ -244,7 +221,7 @@ export default function VideoClient() {
                   src={videoUrl}
                   controls
                   playsInline
-                  className="absolute inset-0 h-full w-full"
+                  className="absolute inset-0 h-full w-full object-cover"
                   onLoadedMetadata={() => phase === 'scanning' && videoRef.current?.pause()}
                 />
                 {phase !== 'scanning' && <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" />}
@@ -321,7 +298,7 @@ export default function VideoClient() {
                     video.currentTime = frac * (video.duration || 0);
                   }}
                   role="slider"
-                  aria-label="Emotion heat strip — click to seek"
+                  aria-label="Emotion heat strip, click to seek"
                   aria-valuenow={0}
                   tabIndex={0}
                 >
@@ -469,7 +446,7 @@ export default function VideoClient() {
                     <span className="font-semibold text-white/80">
                       {timeline.length > 1 && videoRef.current
                         ? `${((videoRef.current.duration || 0) / timeline.length).toFixed(2)}s`
-                        : '—'}
+                        : 'n/a'}
                     </span>
                   </div>
                 </div>

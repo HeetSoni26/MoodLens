@@ -3,7 +3,7 @@ import { dominantEmotion, emptyScores } from './emotions';
 
 /* Lightweight session journal persisted to localStorage. Every analysis run
    (live, photo, video, text, voice) can record a summary that the dashboard
-   aggregates. Kept deliberately small — only aggregated emotion data, never
+   aggregates. Kept deliberately small: only aggregated emotion data, never
    raw frames or text. */
 
 export type SessionMode = 'live' | 'image' | 'video' | 'text' | 'voice';
@@ -40,7 +40,7 @@ function safeWrite(sessions: MoodSession[]) {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions.slice(0, MAX_SESSIONS)));
     window.dispatchEvent(new CustomEvent(CHANGE_EVENT));
   } catch {
-    /* storage full or unavailable — journal is best-effort */
+    /* storage full or unavailable, journal is best-effort */
   }
 }
 

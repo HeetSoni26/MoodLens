@@ -21,6 +21,7 @@ import FeatureHeader from '@/components/ui/FeatureHeader';
 import { useFaceEngine } from '@/hooks/useFaceEngine';
 import { EMOTIONS, dominantEmotion, type EmotionKey, type EmotionScores } from '@/lib/emotions';
 import type { DetectedFace } from '@/lib/vision';
+import { drawFaceBox, mapFaceBox, prepareCanvas } from '@/lib/overlay';
 import { saveSession } from '@/lib/session';
 
 const FPS_OPTIONS = [8, 12, 18, 24] as const;
@@ -33,81 +34,15 @@ function drawOverlay(
   video: HTMLVideoElement,
   mirrored: boolean,
 ) {
-  const cw = canvas.clientWidth;
-  const ch = canvas.clientHeight;
-  if (cw === 0 || ch === 0) return;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const pw = Math.round(cw * dpr);
-  const ph = Math.round(ch * dpr);
-  if (canvas.width !== pw || canvas.height !== ph) {
-    canvas.width = pw;
-    canvas.height = ph;
-  }
+  const prep = prepareCanvas(canvas, video.videoWidth, video.videoHeight);
+  if (!prep) return;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
-  ctx.clearRect(0, 0, pw, ph);
-
-  const vw = video.videoWidth || 1;
-  const vh = video.videoHeight || 1;
-  const sx = (pw / vw) * dpr;
-  const sy = (ph / vh) * dpr;
+  const { pw, t, dpr } = prep;
+  ctx.clearRect(0, 0, pw, canvas.height);
 
   for (const face of faces) {
-    const top = dominantEmotion(face.scores);
-    const meta = EMOTIONS[top];
-    let { x, y, width, height } = face.box;
-    x *= sx;
-    y *= sy;
-    width *= sx;
-    height *= sy;
-    if (mirrored) x = pw - x - width;
-
-    // glow box
-    ctx.save();
-    ctx.strokeStyle = meta.color;
-    ctx.lineWidth = 2.5 * dpr;
-    ctx.shadowColor = `${meta.color}aa`;
-    ctx.shadowBlur = 16 * dpr;
-    const r = 14 * dpr;
-    ctx.beginPath();
-    ctx.roundRect(x, y, width, height, r);
-    ctx.stroke();
-    ctx.restore();
-
-    // corner accents
-    ctx.save();
-    ctx.strokeStyle = meta.color;
-    ctx.lineWidth = 3.5 * dpr;
-    ctx.lineCap = 'round';
-    const c = Math.min(22 * dpr, width / 3, height / 3);
-    ctx.beginPath();
-    ctx.moveTo(x, y + c); ctx.lineTo(x, y + r * 0.4); ctx.quadraticCurveTo(x, y, x + r * 0.4, y); ctx.lineTo(x + c, y);
-    ctx.moveTo(x + width - c, y); ctx.lineTo(x + width - r * 0.4, y); ctx.quadraticCurveTo(x + width, y, x + width, y + r * 0.4); ctx.lineTo(x + width, y + c);
-    ctx.moveTo(x + width, y + height - c); ctx.lineTo(x + width, y + height - r * 0.4); ctx.quadraticCurveTo(x + width, y + height, x + width - r * 0.4, y + height); ctx.lineTo(x + width - c, y + height);
-    ctx.moveTo(x + c, y + height); ctx.lineTo(x + r * 0.4, y + height); ctx.quadraticCurveTo(x, y + height, x, y + height - r * 0.4); ctx.lineTo(x, y + height - c);
-    ctx.stroke();
-    ctx.restore();
-
-    // label chip
-    const label = `${meta.emoji} ${meta.label} ${Math.round(face.scores[top] * 100)}%`;
-    ctx.font = `600 ${12 * dpr}px Outfit, ui-sans-serif, system-ui, sans-serif`;
-    const padX = 9 * dpr;
-    const textW = ctx.measureText(label).width;
-    const chipW = textW + padX * 2;
-    const chipH = 24 * dpr;
-    const chipY = Math.max(0, y - chipH - 7 * dpr);
-    ctx.save();
-    ctx.fillStyle = 'rgba(6, 8, 18, 0.82)';
-    ctx.strokeStyle = `${meta.color}88`;
-    ctx.lineWidth = 1 * dpr;
-    ctx.beginPath();
-    ctx.roundRect(x, chipY, chipW, chipH, chipH / 2);
-    ctx.fill();
-    ctx.stroke();
-    ctx.fillStyle = meta.color;
-    ctx.textBaseline = 'middle';
-    ctx.fillText(label, x + padX, chipY + chipH / 2 + 0.5 * dpr);
-    ctx.restore();
+    drawFaceBox(ctx, face, mapFaceBox(face, pw, t, mirrored), dpr);
   }
 }
 
@@ -165,7 +100,7 @@ export default function LiveClient() {
         setToast('Session saved to your dashboard');
         setTimeout(() => setToast(null), 3200);
       } else {
-        setToast('No faces were detected — nothing to save');
+        setToast('No faces were detected, nothing to save');
         setTimeout(() => setToast(null), 3200);
       }
     } else {
@@ -196,7 +131,7 @@ export default function LiveClient() {
       ctx.fillStyle = 'rgba(6, 8, 18, 0.72)';
       ctx.fillRect(24, out.height - 92, 460, 62);
       ctx.fillStyle = meta.color;
-      ctx.fillText(`${meta.emoji} ${meta.label} — MoodLens`, 44, out.height - 50);
+      ctx.fillText(`${meta.emoji} ${meta.label} · MoodLens`, 44, out.height - 50);
     }
     out.toBlob((blob) => {
       if (!blob) return;
@@ -221,7 +156,7 @@ export default function LiveClient() {
       <FeatureHeader
         eyebrow="Live Detection"
         title="Real-time emotion recognition"
-        description="Turn on your camera and watch MoodLens track every face and read seven emotions simultaneously — processed entirely on this device."
+        description="Turn on your camera and watch MoodLens track every face and read seven emotions simultaneously, processed entirely on this device."
       />
 
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-5 px-5 pt-8 lg:grid-cols-[1fr_360px]">
@@ -263,7 +198,7 @@ export default function LiveClient() {
                   <p className="mt-1.5 text-sm text-white/55">
                     {status === 'error'
                       ? statusMessage
-                      : 'Frames are processed locally — nothing is ever uploaded.'}
+                      : 'Frames are processed locally, nothing is ever uploaded.'}
                   </p>
                 </div>
               </div>
@@ -475,7 +410,7 @@ export default function LiveClient() {
             <h3 className="font-display text-xs font-bold uppercase tracking-[0.16em] text-white/50">Session journal</h3>
             <p className="mt-2.5 text-xs leading-relaxed text-white/55">
               {recording
-                ? 'Recording — mood samples are being collected for your private dashboard.'
+                ? 'Recording, mood samples are being collected for your private dashboard.'
                 : 'Press Record while detecting to save this session, then review everything on the Dashboard.'}
             </p>
             {toast && (

@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 
 /* Fixed aurora backdrop: three slowly drifting gradient blobs on deep ink.
-   Pure transform/opacity animation — GPU friendly, no repaint. */
+   Pure transform/opacity animation, GPU friendly, no repaint. */
 export default function AuroraBackground({ intensity = 1 }: { intensity?: number }) {
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden bg-ink-950" aria-hidden="true">

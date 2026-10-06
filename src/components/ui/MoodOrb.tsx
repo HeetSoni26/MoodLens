@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { EMOTIONS, EMOTION_ORDER } from '@/lib/emotions';
 
-/* Animated hero centerpiece — a glass orb whose core cycles through the
+/* Animated hero centerpiece: a glass orb whose core cycles through the
    seven emotions, surrounded by orbiting emoji chips and a conic aura ring. */
 export default function MoodOrb() {
   const [idx, setIdx] = useState(0);

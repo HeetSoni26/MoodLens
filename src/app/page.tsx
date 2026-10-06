@@ -30,7 +30,7 @@ const FEATURES = [
     icon: Camera,
     href: '/image',
     title: 'Photo Batch',
-    desc: 'Drop a whole album — every face in every photo gets its own emotion read, crop and confidence score.',
+    desc: 'Drop a whole album: every face in every photo gets its own emotion read, crop and confidence score.',
     accent: 'from-aurora-cyan/25 to-transparent',
     tag: 'Batch upload',
   },
@@ -46,7 +46,7 @@ const FEATURES = [
     icon: MessageCircleHeart,
     href: '/text',
     title: 'Text Emotions',
-    desc: 'Paste a message, review or journal entry — a real transformer model reads the feeling behind the words.',
+    desc: 'Paste a message, review or journal entry, and a real transformer model reads the feeling behind the words.',
     accent: 'from-mood-fear/25 to-transparent',
     tag: 'Transformer NLP',
   },
@@ -54,7 +54,7 @@ const FEATURES = [
     icon: Mic,
     href: '/voice',
     title: 'Voice Fusion',
-    desc: 'Speak your mind and MoodLens reads your words and your face at the same time — then compares the two.',
+    desc: 'Speak your mind and MoodLens reads your words and your face at the same time, then compares the two.',
     accent: 'from-mood-surprise/25 to-transparent',
     tag: 'Say it vs show it',
   },
@@ -72,7 +72,7 @@ const STEPS = [
   {
     icon: Sparkles,
     title: 'Pick a mode',
-    desc: 'Camera, photos, video, text or voice — each one runs a purpose-built emotion pipeline.',
+    desc: 'Camera, photos, video, text or voice: each one runs a purpose-built emotion pipeline.',
   },
   {
     icon: Gauge,
@@ -119,7 +119,7 @@ export default function Home() {
             transition={{ duration: 0.65, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
             className="max-w-xl text-base leading-relaxed text-white/60 sm:text-lg"
           >
-            MoodLens reads emotions from your face, your words, photos and videos — all inside
+            MoodLens reads emotions from your face, your words, photos and videos, all inside
             your browser. Seven emotions, five senses, zero uploads.
           </motion.p>
 
@@ -170,7 +170,7 @@ export default function Home() {
         <SectionHeading
           eyebrow="Five senses, one lens"
           title={<>Every way to read a mood</>}
-          description="Each mode is a complete pipeline — from raw pixels or plain words to calibrated emotion probabilities, visualized in real time."
+          description="Each mode is a complete pipeline, from raw pixels or plain words to calibrated emotion probabilities, visualized in real time."
         />
         <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map(({ icon: Icon, href, title, desc, accent, tag }, i) => (
@@ -203,7 +203,7 @@ export default function Home() {
         <SectionHeading
           eyebrow="How it works"
           title="Neural nets in your browser, not the cloud"
-          description="MoodLens ships compact quantized neural networks straight to your browser. They run on your GPU via WebGL — private, instant and free to use."
+          description="MoodLens ships compact quantized neural networks straight to your browser. They run on your GPU via WebGL: private, instant and free to use."
         />
         <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
           {STEPS.map(({ icon: Icon, title, desc }, i) => (
@@ -242,7 +242,7 @@ export default function Home() {
               <p className="max-w-2xl text-sm leading-relaxed text-white/60 sm:text-base">
                 Unlike cloud emotion APIs, MoodLens has no backend to send anything to. Every frame,
                 word and waveform is analyzed locally and disappears when you close the tab. Only
-                anonymous emotion summaries (never raw data) are stored — in your own browser, and
+                anonymous emotion summaries (never raw data) are stored in your own browser, and
                 only if you let them.
               </p>
             </div>
@@ -257,7 +257,7 @@ export default function Home() {
             Curious what your face says?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-base text-white/60">
-            Turn on the camera and watch MoodLens read you in real time — or start with a sentence you wrote today.
+            Turn on the camera and watch MoodLens read you in real time, or start with a sentence you wrote today.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link

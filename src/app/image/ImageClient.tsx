@@ -1,12 +1,56 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, ImagePlus, Loader2, ScanFace, Trash2, X } from 'lucide-react';
 import FeatureHeader from '@/components/ui/FeatureHeader';
 import { EMOTIONS, dominantEmotion, type EmotionScores, emptyScores } from '@/lib/emotions';
 import { detectFaces, loadVisionEngine, makeDetectorOptions, type DetectedFace, type VisionEngine } from '@/lib/vision';
+import { drawFaceBox, mapFaceBox, prepareCanvas } from '@/lib/overlay';
 import { downloadBlob, saveSession } from '@/lib/session';
+
+/* Image + detection overlay. The image displays with object-cover, so the
+   canvas maps raw-frame boxes through the same cover transform to stay
+   aligned at any size, DPR, or aspect ratio. */
+function FaceOverlay({ url, alt, faces }: { url: string; alt: string; faces: DetectedFace[] }) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  const redraw = useCallback(() => {
+    const canvas = canvasRef.current;
+    const img = imgRef.current;
+    if (!canvas || !img) return;
+    const prep = prepareCanvas(canvas, img.naturalWidth, img.naturalHeight);
+    if (!prep) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const { pw, ph, t, dpr } = prep;
+    ctx.clearRect(0, 0, pw, ph);
+    for (const face of faces) {
+      drawFaceBox(ctx, face, mapFaceBox(face, pw, t, false), dpr, { label: false });
+    }
+  }, [faces]);
+
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img) return;
+    if (img.complete && img.naturalWidth > 0) redraw();
+    else img.addEventListener('load', redraw, { once: true });
+  }, [redraw]);
+
+  useEffect(() => {
+    window.addEventListener('resize', redraw);
+    return () => window.removeEventListener('resize', redraw);
+  }, [redraw]);
+
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img ref={imgRef} src={url} alt={alt} className="absolute inset-0 h-full w-full object-cover" />
+      <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" />
+    </>
+  );
+}
 
 interface AnalyzedImage {
   id: string;
@@ -166,7 +210,7 @@ export default function ImageClient() {
       <FeatureHeader
         eyebrow="Photo Batch"
         title="Read an entire album at once"
-        description="Drop in up to 12 photos. MoodLens finds every face in every picture and stamps each with its own emotion read — then you can download annotated copies."
+        description="Drop in up to 12 photos. MoodLens finds every face in every picture and stamps each with its own emotion read, then you can download annotated copies."
       />
 
       <div className="mx-auto w-full max-w-6xl px-5 pt-8">
@@ -253,40 +297,7 @@ export default function ImageClient() {
                 className="glass group overflow-hidden rounded-[24px]"
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-ink-900">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img.url} alt={img.file.name} className="absolute inset-0 h-full w-full object-cover" />
-                  {/* overlay boxes */}
-                  {img.status === 'done' && (
-                    <canvas
-                      className="absolute inset-0 h-full w-full"
-                      ref={(canvas) => {
-                        if (!canvas) return;
-                        const el = new Image();
-                        el.src = img.url;
-                        void el.decode().then(() => {
-                          canvas.width = el.naturalWidth;
-                          canvas.height = el.naturalHeight;
-                          const ctx = canvas.getContext('2d');
-                          if (!ctx) return;
-                          ctx.clearRect(0, 0, canvas.width, canvas.height);
-                          for (const face of img.faces) {
-                            const top = dominantEmotion(face.scores);
-                            const meta = EMOTIONS[top];
-                            const { x, y, width, height } = face.box;
-                            ctx.save();
-                            ctx.strokeStyle = meta.color;
-                            ctx.lineWidth = 2.5;
-                            ctx.shadowColor = `${meta.color}aa`;
-                            ctx.shadowBlur = 10;
-                            ctx.beginPath();
-                            ctx.roundRect(x, y, width, height, 12);
-                            ctx.stroke();
-                            ctx.restore();
-                          }
-                        });
-                      }}
-                    />
-                  )}
+                  <FaceOverlay url={img.url} alt={img.file.name} faces={img.status === 'done' ? img.faces : []} />
                   {img.status === 'processing' && (
                     <div className="absolute inset-0 flex items-center justify-center bg-ink-950/60 backdrop-blur-[2px]">
                       <Loader2 size={22} className="animate-spin text-aurora-cyan" aria-hidden="true" />

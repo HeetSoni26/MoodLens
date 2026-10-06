@@ -5,7 +5,7 @@ import type {
 import { FACE_EXPRESSION_MAP, type EmotionKey, type EmotionScores, emptyScores } from './emotions';
 
 /* Client-side vision engine built on @vladmandic/face-api (TensorFlow.js).
-   Models are self-hosted from /public/models/faceapi — nothing ever leaves
+   Models are self-hosted from /public/models/faceapi, nothing ever leaves
    the device. Only two models are needed: TinyFaceDetector (localization)
    and FaceExpressionNet (7-class expression probabilities). */
 
@@ -37,7 +37,7 @@ export function loadVisionEngine(): Promise<VisionEngine> {
 }
 
 export function makeDetectorOptions(engine: VisionEngine): TinyFaceDetectorOptions {
-  return new engine.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.4 });
+  return new engine.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.35 });
 }
 
 interface RawFace {
@@ -68,7 +68,7 @@ export async function detectFaces(
   });
 }
 
-/* Exponential moving average smoother — keeps bars & boxes calm without
+/* Exponential moving average smoother, keeps bars & boxes calm without
    freezing genuine changes (alpha 0.4 ≈ ~3 frame settle time). */
 const SMOOTH_ALPHA = 0.4;
 

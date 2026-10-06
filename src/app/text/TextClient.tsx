@@ -13,7 +13,7 @@ const EXAMPLES = [
   'I just got the job offer I have been dreaming about for months!!',
   'Honestly this is the worst experience I have ever had with support.',
   'The movie was okay I guess, nothing really special either way.',
-  'I can’t believe they announced a sequel — nobody saw that coming!',
+  'I can’t believe they announced a sequel, nobody saw that coming!',
   'Walking home alone at night through that alley felt terrifying.',
 ];
 
@@ -106,7 +106,7 @@ export default function TextClient() {
               ref={textareaRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Type or paste anything — a tweet, a review, a message from a friend…"
+              placeholder="Type or paste anything: a tweet, a review, a message from a friend…"
               rows={8}
               maxLength={2000}
               className="w-full flex-1 resize-none rounded-2xl border border-white/[0.08] bg-ink-900/70 p-4 text-sm leading-relaxed text-white/90 placeholder:text-white/30 outline-none transition-colors focus:border-aurora-violet/50"
@@ -157,7 +157,7 @@ export default function TextClient() {
                 />
               </div>
               <p className="mt-2 text-[11px] text-white/40">
-                The model is cached by your browser — next time it loads instantly, fully offline.
+                The model is cached by your browser, so next time it loads instantly, fully offline.
               </p>
             </div>
           )}
@@ -165,7 +165,7 @@ export default function TextClient() {
           {error && (
             <div className="flex items-center gap-3 rounded-[22px] border border-mood-angry/30 bg-mood-angry/10 p-4 text-sm text-mood-angry">
               <AlertTriangle size={16} aria-hidden="true" />
-              <span>{error} — check your connection; the model needs to be fetched once from the Hugging Face hub.</span>
+              <span>{error}. Check your connection; the model needs to be fetched once from the Hugging Face hub.</span>
             </div>
           )}
 
