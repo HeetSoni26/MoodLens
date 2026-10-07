@@ -37,17 +37,28 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'Heet Soni', url: 'https://heet-portfolio-two.vercel.app' }],
   creator: 'Heet Soni',
+  metadataBase: new URL('https://mood-lens-rho.vercel.app'),
   openGraph: {
     title: 'MoodLens | Real-Time Emotion AI',
     description:
       'Reads emotions from faces, words, photos and videos, 100% in your browser. No uploads, no tracking, no accounts.',
     type: 'website',
     siteName: 'MoodLens',
+    url: 'https://mood-lens-rho.vercel.app',
+    images: [
+      {
+        url: '/og/og-cover.png',
+        width: 1200,
+        height: 630,
+        alt: 'MoodLens | Real-Time Emotion AI',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'MoodLens | Real-Time Emotion AI',
     description: 'Face · Photo · Video · Text · Voice emotion AI running fully on-device.',
+    images: ['/og/og-cover.png'],
   },
 };
 
